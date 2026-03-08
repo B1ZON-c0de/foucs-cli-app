@@ -1,0 +1,119 @@
+# Бинарные файлы
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Директории с бинарниками
+/bin/
+/build/
+/dist/
+
+# Зависимости
+/vendor/
+/Gopkg.lock
+/Gopkg.toml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
+/logs/
+/tmp/
+
+# Временные файлы
+*.tmp
+*.temp
+/covers/
+*.coverprofile
+
+# Файлы конфигурации с секретами
+.env
+.env.local
+.env.production
+*.secret.*
+config/local.*
+
+# Тестовые файлы
+/coverage/
+coverage.html
+coverage.out
+profile.out
+*.prof
+
+# Результаты линтеров
+/golangci-lint/
+/report/
+
+# Swagger / API docs
+/swagger/
+/docs/
+
+# SSL сертификаты
+*.pem
+*.crt
+*.key
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Go modules
+go.sum
+go.mod  # Обычно go.mod коммитят, но можно добавить если нужно
+
+# Временные файлы тестов
+temp-tasks*.json
+testdata/*.tmp
+
+# Бэкапы
+*.bak
+*.backup
+
+# OS generated files
+*.pid
+*.seed
+*.pid.lock
+
+# Директория для сборки
+/out/
+/target/
+
+# Отладочные файлы
+debug/
+debug.test
+
+# Профилирование
+cpu.prof
+mem.prof
+block.prof
+mutex.prof
+
+# Линтер
+golangci-lint.log
+
+# Временные файлы от редакторов
+*.orig
+*.old
+*.new
+
+# Файлы зависимостей (если не используете go modules)
+Godeps/
+
+# Файлы отладки delve
+__debug_bin
+
+# Директория для временных файлов Go
+$GOPATH/pkg/
