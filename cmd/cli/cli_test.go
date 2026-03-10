@@ -3,18 +3,20 @@ package main
 import (
 	"bytes"
 	"fmt"
+	fio "focus-app/internal/io"
 	"focus-app/internal/storage"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 )
 
 func TestHandleCLI(t *testing.T) {
+	now, timeStr := getTime()
+	displayedTime := now.Format("2006-01-02 15:04:05")
+
 	t.Run("Аргумент list", func(t *testing.T) {
 		var buf bytes.Buffer
-
-		now, timeStr := getTime()
-		displayedTime := now.Format("2006-01-02 15:04:05")
 
 		mockData := fmt.Sprintf(`[
 	{"id":1, "type":"Новая", "name":"Первая задача", "created_at":"%s"},
@@ -26,12 +28,33 @@ func TestHandleCLI(t *testing.T) {
 
 		store := storage.NewTasksStorage(tempFile)
 
-		HandleCLI("list", &buf, store)
+		args := []string{"list"}
+		HandleCLI(args, &buf, store)
 
 		want := fmt.Sprintf("1. [НОВАЯ] Первая задача (%s)\n2. [НОВАЯ] Вторая задача (%s)\n",
 			displayedTime, displayedTime)
 
 		assertBuf(t, &buf, want)
+	})
+
+	t.Run("Аргумент add", func(t *testing.T) {
+		var buf bytes.Buffer
+
+		tempFile, clearFile := createTempFile(t, "[]")
+		defer clearFile()
+
+		store := storage.NewTasksStorage(tempFile)
+		args := []string{"add", "Новая задача"}
+		HandleCLI(args, &buf, store)
+		got := store.GetTasks()
+
+		want := []fio.Task{
+			{1, "Новая", "Новая задача", now},
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("Ожидали %v Получили %v", want, got)
+		}
 	})
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	fio "focus-app/internal/io"
 	"focus-app/internal/storage"
 	"io"
@@ -17,13 +18,26 @@ func main() {
 	store := storage.NewTasksStorage(file)
 	args := os.Args[1:]
 
-	HandleCLI(args[0], os.Stdout, store)
+	HandleCLI(args, os.Stdout, store)
 }
 
-func HandleCLI(command string, w io.Writer, store *storage.TasksStorage) {
+func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
+	if len(args) == 0 {
+		fmt.Fprint(w, "Команда не указана")
+	}
+
+	command := args[0]
+
 	switch command {
 	case "list":
 		tasks := store.GetTasks()
 		fio.PrintTasks(w, tasks)
+	case "add":
+		if len(args) < 2 {
+			fmt.Fprint(w, "Укажите название задачи")
+		}
+		store.SaveTask(args[1])
+	default:
+		fmt.Fprint(w, "Неверное использование без аргументов")
 	}
 }
