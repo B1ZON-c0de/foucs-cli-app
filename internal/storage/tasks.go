@@ -2,8 +2,10 @@ package storage
 
 import (
 	"encoding/json"
+	"errors"
 	fio "focus-app/internal/io"
 	"io"
+	"log"
 	"os"
 	"time"
 )
@@ -52,6 +54,18 @@ func (ts *TasksStorage) SaveTask(name string) {
 
 }
 
+func (ts *TasksStorage) TaskDone(id int) {
+	task, err := getTaskById(id, ts.GetTasks())
+	if err != nil {
+		log.Fatal(err)
+	}
+	task.Type = "Выполнено"
+
+	ts.file.Truncate(0)
+	ts.file.Seek(0, io.SeekStart)
+	json.NewEncoder(ts.file).Encode(task)
+}
+
 func getNextId(tasks []fio.Task) (maxId int) {
 	for _, task := range tasks {
 		if task.Id > maxId {
@@ -61,4 +75,13 @@ func getNextId(tasks []fio.Task) (maxId int) {
 	maxId++
 
 	return
+}
+
+func getTaskById(id int, tasks []fio.Task) (*fio.Task, error) {
+	for i := range tasks {
+		if tasks[i].Id == id {
+			return &tasks[i], nil
+		}
+	}
+	return nil, errors.New("не удалось найти задачу")
 }

@@ -58,6 +58,29 @@ func TestStorage(t *testing.T) {
 		}
 
 	})
+
+	t.Run("Выполнение задачи", func(t *testing.T) {
+		_, timeStr := getTime()
+
+		mockTasks := fmt.Sprintf(`[
+{"id":1, "type":"Новая", "name":"Первая задача", "created_at":"%s"},
+{"id":2, "type":"Новая", "name":"Вторая задача", "created_at":"%s"}
+]`, timeStr, timeStr)
+
+		tempFile, clearFile := createTempFile(t, mockTasks)
+		defer clearFile()
+		store := storage.NewTasksStorage(tempFile)
+
+		store.TaskDone(1)
+		task := getTaskById(1, store.GetTasks())
+		got := task.Type
+		want := "Выполнено"
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("Ожидали %q Получил  %q", want, got)
+		}
+
+	})
 }
 
 func getTime() (now time.Time, timeStr string) {
@@ -82,4 +105,15 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	}
 
 	return tempFile, clearFile
+}
+
+func getTaskById(id int, tasks []fio.Task) fio.Task {
+	var foundedTask fio.Task
+	for _, task := range tasks {
+		if task.Id == id {
+			foundedTask = task
+		}
+	}
+
+	return foundedTask
 }

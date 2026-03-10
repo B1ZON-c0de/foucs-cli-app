@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -37,6 +38,15 @@ func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
 			fmt.Fprint(w, "Укажите название задачи")
 		}
 		store.SaveTask(args[1])
+	case "done":
+		if len(args) < 2 {
+			fmt.Fprint(w, "Укажите id задачи")
+		}
+		taskId, err := strconv.Atoi(args[1])
+		if err != nil {
+			fmt.Fprint(w, "Не удлось преобразовать строку в число")
+		}
+		store.TaskDone(taskId)
 	default:
 		fmt.Fprint(w, "Неверное использование без аргументов")
 	}

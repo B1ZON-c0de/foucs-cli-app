@@ -56,6 +56,26 @@ func TestHandleCLI(t *testing.T) {
 			t.Errorf("Ожидали %v Получили %v", want, got)
 		}
 	})
+
+	t.Run("Аргумент done", func(t *testing.T) {
+		var buf bytes.Buffer
+		tempFile, clearFile := createTempFile(t, "[]")
+		defer clearFile()
+
+		store := storage.NewTasksStorage(tempFile)
+
+		store.SaveTask("New Task")
+
+		args := []string{"done", "1"}
+		HandleCLI(args, &buf, store)
+
+		got := getTaskById(1, store.GetTasks()).Type
+		want := "Выполнено"
+
+		if got != want {
+			t.Errorf("Ожидали %v Получили %v", want, got)
+		}
+	})
 }
 
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
@@ -88,4 +108,15 @@ func assertBuf(t *testing.T, buf *bytes.Buffer, want string) {
 	if want != buf.String() {
 		t.Errorf("Ожидали %q получили %q", want, buf.String())
 	}
+}
+
+func getTaskById(id int, tasks []fio.Task) fio.Task {
+	var foundedTask fio.Task
+	for _, task := range tasks {
+		if task.Id == id {
+			foundedTask = task
+		}
+	}
+
+	return foundedTask
 }
