@@ -35,7 +35,7 @@ func (ts *TasksStorage) GetTasks() ([]fio.Task, error) {
 		return []fio.Task{}, err
 	}
 
-	if err := json.NewDecoder(ts.file).Decode(&ts.tasks); err != nil {
+	if err := json.NewDecoder(ts.file).Decode(&ts.tasks); err != nil && err != io.EOF {
 		return []fio.Task{}, err
 	}
 

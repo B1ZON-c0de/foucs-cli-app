@@ -3,6 +3,7 @@ package io
 import (
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"time"
 )
@@ -21,11 +22,15 @@ type Task struct {
 
 func PrintTasks(w io.Writer, tasks []Task) {
 	if tasks == nil || len(tasks) == 0 {
-		fmt.Fprint(w, NoTasks)
+		if _, err := fmt.Fprint(w, NoTasks); err != nil {
+			log.Fatal(err)
+		}
 		return
 	}
 
-	fmt.Fprint(w, getStringsTasks(tasks))
+	if _, err := fmt.Fprint(w, getStringsTasks(tasks)); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getStringsTasks(tasks []Task) string {
