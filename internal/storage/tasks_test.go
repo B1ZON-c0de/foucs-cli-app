@@ -43,10 +43,14 @@ func TestStorage(t *testing.T) {
 		store := storage.NewTasksStorage(tempFile)
 
 		store.SaveTask("Новая задача")
+		store.SaveTask("Новая задача")
+		store.SaveTask("Новая задача")
 
 		got := store.GetTasks()
 		want := []fio.Task{
 			{1, "Новая", "Новая задача", now},
+			{2, "Новая", "Новая задача", now},
+			{3, "Новая", "Новая задача", now},
 		}
 
 		if !reflect.DeepEqual(got, want) {

@@ -29,17 +29,32 @@ func (ts *TasksStorage) GetTasks() []fio.Task {
 
 func (ts *TasksStorage) SaveTask(name string) {
 	now := time.Now().Round(time.Second)
+
+	tasks := ts.GetTasks()
+	nextId := getNextId(tasks)
+
 	newTask := fio.Task{
-		Id:        1,
+		Id:        nextId,
 		Type:      "Новая",
 		Name:      name,
 		CreatedAt: now,
 	}
 
-	tasks := ts.GetTasks()
 	tasks = append(tasks, newTask)
 
+	ts.file.Truncate(0)
 	ts.file.Seek(0, io.SeekStart)
 	json.NewEncoder(ts.file).Encode(tasks)
 
+}
+
+func getNextId(tasks []fio.Task) (maxId int) {
+	for _, task := range tasks {
+		if task.Id > maxId {
+			maxId = task.Id
+		}
+	}
+	maxId++
+
+	return
 }
