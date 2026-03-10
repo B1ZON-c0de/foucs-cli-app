@@ -24,30 +24,49 @@ func main() {
 
 func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
 	if len(args) == 0 {
-		fmt.Fprint(w, "Команда не указана")
+		if _, err := fmt.Fprint(w, "Команда не указана"); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	command := args[0]
 
 	switch command {
 	case "list":
-		tasks := store.GetTasks()
+		tasks, err := store.GetTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
 		fio.PrintTasks(w, tasks)
 	case "add":
 		if len(args) < 2 {
-			fmt.Fprint(w, "Укажите название задачи")
+			if _, err := fmt.Fprint(w, "Укажите название задачи"); err != nil {
+				log.Fatal(err)
+			}
 		}
-		store.SaveTask(args[1])
+
+		if err := store.SaveTask(args[1]); err != nil {
+			log.Fatal(err)
+		}
 	case "done":
 		if len(args) < 2 {
-			fmt.Fprint(w, "Укажите id задачи")
+			if _, err := fmt.Fprint(w, "Укажите id задачи"); err != nil {
+				log.Fatal(err)
+			}
 		}
 		taskId, err := strconv.Atoi(args[1])
 		if err != nil {
-			fmt.Fprint(w, "Не удлось преобразовать строку в число")
+			if _, err := fmt.Fprint(w, "Не удлось преобразовать строку в число"); err != nil {
+				log.Fatal(err)
+			}
 		}
-		store.TaskDone(taskId)
+
+		if err := store.TaskDone(taskId); err != nil {
+			log.Fatal(err)
+		}
 	default:
-		fmt.Fprint(w, "Неверное использование без аргументов")
+		if _, err := fmt.Fprint(w, "Неверное использование без аргументов"); err != nil {
+			log.Fatal(err)
+		}
 	}
 }

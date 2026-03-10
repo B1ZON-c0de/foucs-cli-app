@@ -46,7 +46,11 @@ func TestHandleCLI(t *testing.T) {
 		store := storage.NewTasksStorage(tempFile)
 		args := []string{"add", "Новая задача"}
 		HandleCLI(args, &buf, store)
-		got := store.GetTasks()
+
+		got, err := store.GetTasks()
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		want := []fio.Task{
 			{1, "Новая", "Новая задача", now},
@@ -64,13 +68,22 @@ func TestHandleCLI(t *testing.T) {
 
 		store := storage.NewTasksStorage(tempFile)
 
-		store.SaveTask("New Task")
-		store.SaveTask("New Task")
+		if err := store.SaveTask("New Task"); err != nil {
+			t.Fatal(err)
+		}
+		if err := store.SaveTask("New Task"); err != nil {
+			t.Fatal(err)
+		}
 
 		args := []string{"done", "1"}
 		HandleCLI(args, &buf, store)
 
-		got := getTaskById(1, store.GetTasks()).Type
+		tasks, err := store.GetTasks()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := getTaskById(1, tasks).Type
 		want := "Выполнено"
 
 		if got != want {
@@ -87,10 +100,18 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 		t.Fatal(err)
 	}
 
-	tempFile.Write([]byte(initialData))
+	if _, err := tempFile.Write([]byte(initialData)); err != nil {
+		t.Fatal(err)
+	}
+
 	clearFile := func() {
-		os.Remove(tempFile.Name())
-		tempFile.Close()
+		if err := tempFile.Close(); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := os.Remove(tempFile.Name()); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	return tempFile, clearFile
