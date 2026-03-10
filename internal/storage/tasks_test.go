@@ -33,6 +33,27 @@ func TestStorage(t *testing.T) {
 			t.Errorf("Ожидали %v получили %v", want, got)
 		}
 	})
+
+	t.Run("Добавление задачи", func(t *testing.T) {
+		now, _ := getTime()
+
+		tempFile, clearFile := createTempFile(t, "[]")
+		defer clearFile()
+
+		store := storage.NewTasksStorage(tempFile)
+
+		store.SaveTask("Новая задача")
+
+		got := store.GetTasks()
+		want := []fio.Task{
+			{1, "Новая", "Новая задача", now},
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("Ожидали %v получили %v", want, got)
+		}
+
+	})
 }
 
 func getTime() (now time.Time, timeStr string) {
