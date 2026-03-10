@@ -63,7 +63,7 @@ func (ts *TasksStorage) TaskDone(id int) {
 
 	ts.file.Truncate(0)
 	ts.file.Seek(0, io.SeekStart)
-	json.NewEncoder(ts.file).Encode(task)
+	json.NewEncoder(ts.file).Encode(ts.tasks)
 }
 
 func getNextId(tasks []fio.Task) (maxId int) {

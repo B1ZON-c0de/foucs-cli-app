@@ -65,6 +65,7 @@ func TestHandleCLI(t *testing.T) {
 		store := storage.NewTasksStorage(tempFile)
 
 		store.SaveTask("New Task")
+		store.SaveTask("New Task")
 
 		args := []string{"done", "1"}
 		HandleCLI(args, &buf, store)
