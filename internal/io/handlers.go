@@ -7,7 +7,10 @@ import (
 	"time"
 )
 
-const NoTasks = "Нет добавленных задач"
+const (
+	NoTasks    = "Нет добавленных задач"
+	TimeFormat = "2006-01-02 15:04:05"
+)
 
 type Task struct {
 	Id        int       `json:"id"`
@@ -29,7 +32,7 @@ func getStringsTasks(tasks []Task) string {
 	var sb strings.Builder
 
 	for _, t := range tasks {
-		newTask := fmt.Sprintf("%d. [%s] %s (%s)\n", t.Id, strings.ToUpper(t.Type), t.Name, t.CreatedAt.Format("2006-01-02 15:04:05"))
+		newTask := fmt.Sprintf("%d. [%s] %s (%s)\n", t.Id, strings.ToUpper(t.Type), t.Name, t.CreatedAt.Format(TimeFormat))
 		sb.WriteString(newTask)
 	}
 

@@ -22,7 +22,7 @@ func TestStorage(t *testing.T) {
 		tempFile, clearFile := createTempFile(t, mockTasks)
 		defer clearFile()
 		store := storage.NewTasksStorage(tempFile)
-		got := store.GetTasks(tempFile)
+		got := store.GetTasks()
 
 		want := []fio.Task{
 			{1, "Новая", "Первая задача", now},
