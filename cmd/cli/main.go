@@ -3,6 +3,7 @@ package main
 import (
 	fio "focus-app/internal/io"
 	"focus-app/internal/storage"
+	"io"
 	"log"
 	"os"
 )
@@ -12,15 +13,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
 
-	TasksStorage := storage.NewTasksStorage(file)
+	store := storage.NewTasksStorage(file)
+	args := os.Args[1:]
 
-	TasksStorage.SaveTask("Первая")
-	TasksStorage.SaveTask("Вторая")
-	TasksStorage.SaveTask("Третья")
+	HandleCLI(args[0], os.Stdout, store)
+}
 
-	tasks := TasksStorage.GetTasks()
-
-	fio.PrintTasks(os.Stdout, tasks)
+func HandleCLI(command string, w io.Writer, store *storage.TasksStorage) {
+	switch command {
+	case "list":
+		tasks := store.GetTasks()
+		fio.PrintTasks(w, tasks)
+	}
 }
