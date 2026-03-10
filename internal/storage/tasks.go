@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+const (
+	typeNewTask = "Новая"
+)
+
 type TasksStorage struct {
 	tasks []fio.Task
 	file  *os.File
@@ -35,7 +39,7 @@ func (ts *TasksStorage) SaveTask(name string) {
 
 	newTask := fio.Task{
 		Id:        nextId,
-		Type:      "Новая",
+		Type:      typeNewTask,
 		Name:      name,
 		CreatedAt: now,
 	}
