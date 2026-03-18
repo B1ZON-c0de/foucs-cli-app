@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	typeNewTask  = "Новая"
-	typeDoneTask = "Выполнено"
+	typeNewTask   = "Новая"
+	typeDoneTask  = "Выполнено"
+	typeFocusTask = "В работе"
 
 	ErrNotFoundTask = "не удалось найти задачу"
 	ErrIncorrectId  = "некорректный id"
@@ -138,6 +139,34 @@ func (ts *TasksStorage) TaskDelete(id int) error {
 	}
 
 	if err := json.NewEncoder(ts.file).Encode(tasks); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ts *TasksStorage) TaskFocus(id int) error {
+	tasks, err := ts.GetTasks()
+	if err != nil {
+		return errors.New(ErrNotGetTasks)
+	}
+
+	task, err := getTaskById(id, tasks)
+	if err != nil {
+		return err
+	}
+
+	task.Type = typeFocusTask
+
+	if err := ts.file.Truncate(0); err != nil {
+		return err
+	}
+
+	if _, err := ts.file.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+
+	if err := json.NewEncoder(ts.file).Encode(ts.tasks); err != nil {
 		return err
 	}
 

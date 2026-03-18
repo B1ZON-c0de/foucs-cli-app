@@ -145,6 +145,39 @@ func TestStorage(t *testing.T) {
 	})
 }
 
+func TestStartSession(t *testing.T) {
+	now, timeStr := getTime()
+	t.Run("Изменение статуса задачи на в работе", func(t *testing.T) {
+		mockTasks := fmt.Sprintf(`[
+{"id":1, "type":"Новая", "name":"Первая задача", "created_at":"%s"},
+{"id":2, "type":"Новая", "name":"Вторая задача", "created_at":"%s"}
+]`, timeStr, timeStr)
+
+		tempFile, clearFile := createTempFile(t, mockTasks)
+		defer clearFile()
+
+		store := storage.NewTasksStorage(tempFile)
+
+		err := store.TaskFocus(2)
+		if err != nil {
+			t.Errorf("Не ожидпали ошибку но получили")
+		}
+		tasks, _ := store.GetTasks()
+
+		got, _ := getTaskById(2, tasks)
+		want := fio.Task{
+			Id:        2,
+			Type:      "В работе",
+			Name:      "Вторая задача",
+			CreatedAt: now,
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("Ожидали %v получил %v", want, got)
+		}
+	})
+}
+
 func getTime() (now time.Time, timeStr string) {
 	now = time.Now().Round(time.Second)
 	timeStr = now.Format(time.RFC3339)

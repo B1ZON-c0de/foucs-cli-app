@@ -64,7 +64,6 @@ func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
 		if err := store.TaskDone(taskId); err != nil {
 			log.Fatal(err)
 		}
-
 	case "delete":
 		if len(args) < 2 {
 			if _, err := fmt.Fprint(w, "Слишком мало аргументов"); err != nil {
@@ -80,6 +79,21 @@ func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
 		}
 
 		if err := store.TaskDelete(taskId); err != nil {
+			log.Fatal(err)
+		}
+	case "start":
+		if len(args) < 2 {
+			if _, err := fmt.Fprint(w, "Укажите id задачи"); err != nil {
+				log.Fatal(err)
+			}
+		}
+		taskId, err := strconv.Atoi(args[1])
+		if err != nil {
+			if _, err := fmt.Fprint(w, "Не удлось преобразовать строку в число"); err != nil {
+				log.Fatal(err)
+			}
+		}
+		if err := store.TaskFocus(taskId); err != nil {
 			log.Fatal(err)
 		}
 

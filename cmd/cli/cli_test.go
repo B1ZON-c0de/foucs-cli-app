@@ -120,6 +120,36 @@ func TestHandleCLI(t *testing.T) {
 			t.Errorf("Ожидали %v Получили %v", want, tasks)
 		}
 	})
+
+	t.Run("Аргумент start", func(t *testing.T) {
+		var buf bytes.Buffer
+		tempFile, clearFile := createTempFile(t, "[]")
+		defer clearFile()
+
+		store := storage.NewTasksStorage(tempFile)
+
+		if err := store.SaveTask("New Task"); err != nil {
+			t.Fatal(err)
+		}
+		if err := store.SaveTask("New Task"); err != nil {
+			t.Fatal(err)
+		}
+
+		args := []string{"start", "1"}
+		HandleCLI(args, &buf, store)
+
+		tasks, err := store.GetTasks()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := getTaskById(1, tasks).Type
+		want := "В работе"
+
+		if got != want {
+			t.Errorf("Ожидали %v Получили %v", want, got)
+		}
+	})
 }
 
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
