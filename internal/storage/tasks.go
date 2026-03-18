@@ -173,6 +173,23 @@ func (ts *TasksStorage) TaskFocus(id int) error {
 	return nil
 }
 
+func (ts *TasksStorage) GetStartedTasks() ([]fio.Task, error) {
+	var startedTasks []fio.Task
+
+	tasks, err := ts.GetTasks()
+	if err != nil {
+		return startedTasks, errors.New(ErrNotGetTasks)
+	}
+
+	for _, task := range tasks {
+		if task.Type == typeFocusTask {
+			startedTasks = append(startedTasks, task)
+		}
+	}
+
+	return startedTasks, nil
+}
+
 func getNextId(tasks []fio.Task) (maxId int) {
 	for _, task := range tasks {
 		if task.Id > maxId {

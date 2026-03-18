@@ -33,6 +33,25 @@ func PrintTasks(w io.Writer, tasks []Task) {
 	}
 }
 
+func PrintStartedTasks(w io.Writer, tasks []Task) {
+	if tasks == nil || len(tasks) == 0 {
+		if _, err := fmt.Fprint(w, NoTasks); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	var sb strings.Builder
+	sb.WriteString("Сейчас вы работаете над: ")
+	for _, task := range tasks {
+		newStartedTask := fmt.Sprintf("%q ", task.Name)
+		sb.WriteString(newStartedTask)
+	}
+
+	if _, err := fmt.Fprint(w, sb.String()); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func getStringsTasks(tasks []Task) string {
 	var sb strings.Builder
 

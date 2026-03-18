@@ -38,6 +38,21 @@ func TestTasksHandlers(t *testing.T) {
 		assertBuf(t, &buf, want)
 	})
 
+	t.Run("Вывод Запущенных в рабту задач", func(t *testing.T) {
+		var buf bytes.Buffer
+
+		tasks := []fio.Task{
+			{1, "В работе", "Задача 1", time.Now()},
+			{3, "В работе", "Задача 3", time.Now()},
+		}
+
+		fio.PrintStartedTasks(&buf, tasks)
+
+		want := fmt.Sprintf(`Сейчас вы работаете над: "Задача 1" "Задача 3" `)
+
+		assertBuf(t, &buf, want)
+	})
+
 }
 
 func assertBuf(t *testing.T, buf *bytes.Buffer, want string) {

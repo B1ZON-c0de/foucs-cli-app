@@ -96,6 +96,13 @@ func HandleCLI(args []string, w io.Writer, store *storage.TasksStorage) {
 		if err := store.TaskFocus(taskId); err != nil {
 			log.Fatal(err)
 		}
+	case "status":
+		startedTasks, err := store.GetStartedTasks()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fio.PrintStartedTasks(w, startedTasks)
 
 	default:
 		if _, err := fmt.Fprint(w, "Неверное использование без аргументов"); err != nil {

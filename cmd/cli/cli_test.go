@@ -150,6 +150,27 @@ func TestHandleCLI(t *testing.T) {
 			t.Errorf("Ожидали %v Получили %v", want, got)
 		}
 	})
+
+	t.Run("Аргумент status", func(t *testing.T) {
+		var buf bytes.Buffer
+
+		mockData := fmt.Sprintf(`[
+{"id":1, "type":"В работе", "name":"Первая задача", "created_at":"%s"},
+{"id":2, "type":"Новая", "name":"Вторая задача", "created_at":"%s"},
+{"id":3, "type":"В работе", "name":"Третья задача", "created_at":"%s"}
+]`, timeStr, timeStr, timeStr)
+
+		tempFile, clearFile := createTempFile(t, mockData)
+		defer clearFile()
+		store := storage.NewTasksStorage(tempFile)
+
+		args := []string{"status"}
+		HandleCLI(args, &buf, store)
+
+		want := fmt.Sprintf(`Сейчас вы работаете над: "Первая задача" "Третья задача" `)
+
+		assertBuf(t, &buf, want)
+	})
 }
 
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {

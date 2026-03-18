@@ -176,6 +176,34 @@ func TestStartSession(t *testing.T) {
 			t.Errorf("Ожидали %v получил %v", want, got)
 		}
 	})
+
+	t.Run("Получение запущенных задач", func(t *testing.T) {
+		mockTasks := fmt.Sprintf(`[
+{"id":1, "type":"В работе", "name":"Первая задача", "created_at":"%s"},
+{"id":2, "type":"Новая", "name":"Вторая задача", "created_at":"%s"},
+{"id":3, "type":"В работе", "name":"Третья задача", "created_at":"%s"}
+]`, timeStr, timeStr, timeStr)
+
+		tempFile, clearFile := createTempFile(t, mockTasks)
+		defer clearFile()
+		store := storage.NewTasksStorage(tempFile)
+
+		startedTasks, err := store.GetStartedTasks()
+		if err != nil {
+			t.Errorf("Не ожидали ошибку, но полуили")
+		}
+
+		want := []fio.Task{
+			{1, "В работе", "Первая задача", now},
+			{3, "В работе", "Третья задача", now},
+		}
+
+		if !reflect.DeepEqual(startedTasks, want) {
+			t.Errorf("Ожидали %v Получили %v", want, startedTasks)
+		}
+
+	})
+
 }
 
 func getTime() (now time.Time, timeStr string) {
